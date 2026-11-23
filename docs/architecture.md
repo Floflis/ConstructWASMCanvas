@@ -332,3 +332,10 @@ A prototype that only draws a hard-coded rectangle is a useful first Canvas smok
 The companion [WASM application host API compatibility contract](host-api-compatibility.md) defines the generic application-facing requirements: JavaScript facade operations, API version negotiation, lifecycle states, Canvas ownership, viewport semantics, external resource registration, commands/events, diagnostics, and a minimum independent interoperability fixture.
 
 The contract deliberately targets a JavaScript facade around the WASM module rather than freezing a compiler-specific raw WASM ABI. This lets Rust/wasm-bindgen and other WASM toolchains participate without changing the Construct plugin. StreetChavesRust is one planned consumer, not a dependency.
+
+
+## 16. Rendering performance research
+
+The companion [Rendering performance study: Construct 2/3 and Rust + SDL3 on WebAssembly](rendering-performance-and-rust-wasm.md) documents the different C2/C3 rendering models, plugin drawing APIs, C3 worker/DOM boundary, SDL3/Emscripten WebGL path, direct Rust browser-renderer path, performance principles, risks and benchmark plan.
+
+Important host requirement: a Canvas element is not synonymous with Canvas 2D. The host must leave its rendering context unclaimed until the application selects a supported renderer. SDL3/Emscripten normally uses WebGL on the Canvas; a direct Rust browser adapter may use Canvas 2D or WebGL. The host must not silently force one context type or reuse Construct's internal renderer.
