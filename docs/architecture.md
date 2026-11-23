@@ -325,3 +325,10 @@ These are research and proof-of-concept decisions. Do not fill them with assumpt
 - The tested Construct version, export mode, browser, and limitations are documented.
 
 A prototype that only draws a hard-coded rectangle is a useful first Canvas smoke test, but it does not satisfy the external asset-registration acceptance criterion.
+
+
+## 15. Shared WASM application compatibility contract
+
+The companion [WASM application host API compatibility contract](host-api-compatibility.md) defines the generic application-facing requirements: JavaScript facade operations, API version negotiation, lifecycle states, Canvas ownership, viewport semantics, external resource registration, commands/events, diagnostics, and a minimum independent interoperability fixture.
+
+The contract deliberately targets a JavaScript facade around the WASM module rather than freezing a compiler-specific raw WASM ABI. This lets Rust/wasm-bindgen and other WASM toolchains participate without changing the Construct plugin. StreetChavesRust is one planned consumer, not a dependency.
