@@ -141,3 +141,26 @@ Test the fixture in a standalone browser harness before integrating Construct. T
 - Accessing undocumented Construct internals.
 - Claiming support for every C2/C3 export target before real tests.
 - Freezing a low-level binary ABI before the JavaScript facade and browser fixture are validated.
+
+
+## Renderer context negotiation
+
+An HTML Canvas element is a surface, not a promise of a Canvas 2D context. The host creates and positions the element but must not call `getContext()` before the application adapter selects its renderer. The first context acquisition determines the context family available to that Canvas.
+
+The application package should declare required and optional renderer capabilities during initialization. Candidate capabilities include:
+
+- `canvas2d`
+- `webgl1`
+- `webgl2`
+- `offscreen-canvas` only when validated by the selected toolchain and host
+- threading only as an explicitly separate deployment capability
+
+The host reports the capabilities it can provide and rejects incompatible requirements explicitly. It must not silently downgrade a required renderer.
+
+This distinction matters for SDL3/Emscripten: SDL's 2D renderer uses GLES2 internally and Emscripten maps that to WebGL. It produces a WebGL-backed HTML Canvas, not a Canvas 2D context. A direct Rust browser backend may instead use Canvas 2D through browser bindings, or WebGL through browser bindings/a web renderer.
+
+The host owns the DOM element, CSS geometry, stacking, visibility and element cleanup. After context creation, the application adapter owns its renderer-specific context/resources. The host must not reuse Construct's internal WebGL/WebGPU context.
+
+The host should surface renderer initialization, context-lost and context-restored events. GPU resources may need recreation after context loss while logical resource IDs remain stable.
+
+See [the rendering performance study](rendering-performance-and-rust-wasm.md) for the C2/C3 differences, Emscripten main-thread constraint, timing guidance and benchmark plan.
